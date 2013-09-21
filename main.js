@@ -343,7 +343,7 @@ function init2(sphereTex) {
 		shader : sphereShader,
 		static : false,
 		uniforms : { 
-			tex : 0,
+			tex : 0
 		},
 		attrs : { 
 			vertex : new GL.ArrayBuffer({data : sphereVtxArray}),
