@@ -3,6 +3,7 @@
 
 var canvas;
 var gl;
+var renderer;
 var mouse;
 var sphereObj;
 var axisObj;
@@ -11,7 +12,7 @@ var axisScale = 1.5;
 function resize() {
 	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
-	GL.resize();
+	renderer.resize();
 }
 
 /*
@@ -258,7 +259,7 @@ function update() {
 		axisObj.attrs.vertex.updateData();
 	}
 //console.log(state.S[0], state.S[1], state.S[2], state.S[3]);	
-	GL.draw();
+	renderer.draw();
 	requestAnimFrame(update);
 }
 
@@ -275,7 +276,8 @@ function init1() {
 	$(canvas).disableSelection();
 
 	try {
-		gl = GL.init(canvas);
+		renderer = new GL.CanvasRenderer({canvas:canvas});
+		gl = renderer.gl;
 	} catch (e) {
 		panel.remove();
 		$(canvas).remove();
@@ -283,12 +285,12 @@ function init1() {
 		throw e;
 	}
 	gl.enable(gl.DEPTH_TEST);
-	GL.view.pos[0] = -6;
-	GL.view.fovY = 45;
+	renderer.view.pos[0] = -6;
+	renderer.view.fovY = 45;
 	
 	//x fwd, z up, y left:
 	var SQRT_1_2 = Math.sqrt(1/2);
-	quat.mul(GL.view.angle, /*90' x*/[SQRT_1_2,0,0,SQRT_1_2], /*90' -y*/[0,-SQRT_1_2,0,SQRT_1_2]);
+	quat.mul(renderer.view.angle, /*90' x*/[SQRT_1_2,0,0,SQRT_1_2], /*90' -y*/[0,-SQRT_1_2,0,SQRT_1_2]);
 
 	sphereTex = new GL.Texture2D({
 		flipY : true,
@@ -376,33 +378,33 @@ function init2(sphereTex) {
 		move : function(dx,dy) {
 			var rotAngle = Math.PI / 180 * .01 * Math.sqrt(dx*dx + dy*dy);
 			quat.setAxisAngle(tmpQ, [-dy, -dx, 0], rotAngle);
-			//mat4.translate(GL.mvMat, GL.mvMat, [10*dx/canvas.width, -10*dy/canvas.height, 0]);
+			//mat4.translate(renderer.scene.mvMat, renderer.scene.mvMat, [10*dx/canvas.width, -10*dy/canvas.height, 0]);
 
-			//put tmpQ into the frame of GL.view.angle, so we can rotate the view vector by it
-			//  lastMouseRot = GL.view.angle-1 * tmpQ * GL.view.angle
-			// now newViewAngle = GL.view.angle * tmpQ = lastMouseRot * GL.view.angle
+			//put tmpQ into the frame of renderer.view.angle, so we can rotate the view vector by it
+			//  lastMouseRot = renderer.view.angle-1 * tmpQ * renderer.view.angle
+			// now newViewAngle = renderer.view.angle * tmpQ = lastMouseRot * renderer.view.angle
 			// therefore lastMouseRot is the global transform equivalent of the local transform of tmpQ
-			quat.mul(lastMouseRot, GL.view.angle, tmpQ);
-			quat.conjugate(tmpQ, GL.view.angle);
+			quat.mul(lastMouseRot, renderer.view.angle, tmpQ);
+			quat.conjugate(tmpQ, renderer.view.angle);
 			quat.mul(lastMouseRot, lastMouseRot, tmpQ);
 
-			vec3.copy(tmpV, GL.view.pos);
+			vec3.copy(tmpV, renderer.view.pos);
 			var posDist = vec3.length(tmpV);
 			vec3.transformQuat(tmpV, tmpV, lastMouseRot);
 			vec3.normalize(tmpV, tmpV);
 			vec3.scale(tmpV, tmpV, posDist);
-			vec3.copy(GL.view.pos, tmpV);
+			vec3.copy(renderer.view.pos, tmpV);
 			
 			//RHS apply so it is relative to current view 
-			//newViewAngle := GL.view.angle * tmpQ
-			quat.mul(GL.view.angle, lastMouseRot, GL.view.angle);
-			quat.normalize(GL.view.angle, GL.view.angle);
+			//newViewAngle := renderer.view.angle * tmpQ
+			quat.mul(renderer.view.angle, lastMouseRot, renderer.view.angle);
+			quat.normalize(renderer.view.angle, renderer.view.angle);
 
 		},
 		zoom : function(dz) {
-			GL.view.fovY *= Math.exp(-.0003 * dz);
-			GL.view.fovY = Math.clamp(GL.view.fovY, 1, 179);
-			GL.updateProjection();
+			renderer.view.fovY *= Math.exp(-.0003 * dz);
+			renderer.view.fovY = Math.clamp(renderer.view.fovY, 1, 179);
+			renderer.updateProjection();
 		}
 	});
 	resize();
