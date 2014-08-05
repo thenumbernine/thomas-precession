@@ -277,7 +277,7 @@ function init1() {
 
 	try {
 		renderer = new GL.CanvasRenderer({canvas:canvas});
-		gl = renderer.gl;
+		gl = renderer.context;
 	} catch (e) {
 		panel.remove();
 		$(canvas).remove();
@@ -293,6 +293,7 @@ function init1() {
 	quat.mul(renderer.view.angle, /*90' x*/[SQRT_1_2,0,0,SQRT_1_2], /*90' -y*/[0,-SQRT_1_2,0,SQRT_1_2]);
 
 	sphereTex = new GL.Texture2D({
+		context : gl,
 		flipY : true,
 		generateMipmap : true,
 		magFilter : gl.LINEAR,
@@ -306,6 +307,7 @@ function init1() {
 
 function init2(sphereTex) {
 	var sphereShader = new GL.ShaderProgram({
+		context : gl,
 		vertexCodeID : 'sphere-vsh',
 		fragmentCodeID : 'sphere-fsh'
 	});
@@ -341,6 +343,8 @@ function init2(sphereTex) {
 	}
 	
 	sphereObj = new GL.SceneObject({
+		context : gl,
+		scene : renderer.scene,
 		mode : gl.TRIANGLES,
 		shader : sphereShader,
 		static : false,
@@ -348,23 +352,32 @@ function init2(sphereTex) {
 			tex : 0
 		},
 		attrs : { 
-			vertex : new GL.ArrayBuffer({data : sphereVtxArray}),
-			tc : new GL.ArrayBuffer({data : sphereTCArray})
+			vertex : new GL.ArrayBuffer({
+				context : gl,
+				data : sphereVtxArray
+			}),
+			tc : new GL.ArrayBuffer({
+				context : gl,
+				data : sphereTCArray
+			})
 		},
 		texs : [sphereTex]
 	});
 
 	axisObj = new GL.SceneObject({
+		context : gl,
+		scene : renderer.scene,
 		mode : gl.LINES,
 		shader : new GL.ShaderProgram({
+			context : gl,
 			vertexCodeID : 'axis-vsh',
 			fragmentCodeID : 'axis-fsh'
 		}),
 		attrs : {
 			vertex : new GL.ArrayBuffer({
-				data:[0,0,axisScale*radius, 0,0,-axisScale*radius],
-				usage:gl.DYNAMIC_DRAW,
-				keep:true
+				context : gl,
+				data : [0,0,axisScale*radius, 0,0,-axisScale*radius],
+				usage : gl.DYNAMIC_DRAW
 			})
 		},
 		static : false
