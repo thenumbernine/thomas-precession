@@ -1,82 +1,19 @@
+<!doctype html>
 <html>
 	<head>
+		<meta charset="utf-8">
 		<title>Thomas Precession - WebGL</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 		<meta name="apple-mobile-web-app-capable" content="yes"/>
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-		
 		<link rel='stylesheet' type='text/css' href='style.css'/>
-		<script type='text/javascript' src='/js/jquery-1.11.1.min.js'></script>
-		<script type='text/javascript' src='/js/util.js'></script>
-		<script type='text/javascript' src='/js/gl-matrix.2.2.0.min.js'></script>
-		<script type='text/javascript' src='/js/gl-util.js'></script>
-		<script type='text/javascript' src='/js/mouse3d.js'></script>
-		<script type='text/javascript' src='main.js'></script>
-		
-<script type='text/javascript'>
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-17312646-1']);
-_gaq.push(['_trackPageview']);
-(function() {
-	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-</script>
-
-		<script id='sphere-vsh' type='x-shader/x-vertex'>
-attribute vec3 vertex;
-attribute vec3 tc;
-varying vec2 vtc;
-uniform mat4 mvMat;
-uniform mat4 projMat;
-void main() {
-	vec4 eyePos = mvMat * vec4(vertex, 1.);
-	vtc = tc.xy;
-	gl_Position = projMat * eyePos;
-}
-		</script>
-		<script id='sphere-fsh' type='x-shader/x-fragment'>
-precision mediump float;
-varying vec2 vtc;
-uniform sampler2D tex;
-void main() {
-	gl_FragColor = texture2D(tex, vtc);
-}
-		</script>
-		<script id='axis-vsh' type='x-shader/x-vertex'>
-attribute vec3 vertex;
-uniform mat4 mvMat;
-uniform mat4 projMat;
-void main() {
-	gl_Position = projMat * mvMat * vec4(vertex, 1.);
-}
-		</script>
-		<script id='axis-fsh' type='x-shader/x-fragment'>
-precision mediump float;
-void main() {
-	gl_FragColor = vec4(0., 1., 1., 1.); 
-}
-		</script>
-
+		<script type='module' src='main.js' defer></script>
 	</head>
 	<body style='margin:0px; overflow:hidden'>
 		<div id='panel' style='overflow-x:hidden; width:400px; z-index:1, width:300px; position:absolute; background-color:rgba(0,0,0,.75)'>
 		</div>
 		<div id='webglfail' style='display:none'>
 			Sorry, your browser does not support WebGL<br>
-			Try one of these other, better browsers:<br>
-			<a href='http://www.google.com/chrome'>Chrome</a><br>
-			<a href='http://www.mozilla.org/firefox'>Firefox</a><br>
-			<a href='http://www.apple.com/safari'>Safari</a><br>
-			<b>Opera Users:</b><br>
-			Enter "opera:config" in the address bar.<br>
-			In the "User Prefs" section set both "Enable Hardware Acceleration" and "Enable WebGL" to "1" and then click "Save".<br>
-			It is still buggy.<br>
-			<b>IE Users:</b><br>
-			Sorry guys, IE doesn&rsquo;t plan to support WebGL.<br>
-			Consider using a more <a href='http://www.w3schools.com/browsers/browsers_stats.asp'>standard compliant</a> browser.<br>
-			<br>
 		</div>
 	</body>
 </html>
