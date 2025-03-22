@@ -1,5 +1,6 @@
+import {Canvas} from '/js/dom.js';
 import {vec3, quat} from '/js/gl-matrix-3.4.1/index.js';
-import {DOM, getIDs, removeFromParent, show} from '/js/util.js';
+import {getIDs, removeFromParent, show} from '/js/util.js';
 import {GLUtil} from '/js/gl-util.js';
 import {Mouse3D} from '/js/mouse3d.js';
 
@@ -275,8 +276,8 @@ function update() {
 	requestAnimationFrame(update);
 }
 
-canvas = DOM('canvas', {
-	css : {
+canvas = Canvas({
+	style : {
 		left : 0,
 		top : 0,
 		position : 'absolute',
